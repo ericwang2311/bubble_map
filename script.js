@@ -29,12 +29,19 @@ d3.csv("shows_platform_split_single_genre.csv").then(function (data) {
   update(PlatformsAndShows);
 
   // setTimeout(function () {
-  //   update(PlatformsAndShows);
+  //   // update(PlatformsAndShows);
+  //   svg.selectAll("circle").transition().attr("r", 0).duration(1000).remove();
+  //   svg.selectAll("text").remove();
   // }, 3000);
+
+  // setTimeout(function () {
+  //   update(PlatformsAndShows);
+  // }, 6000);
 });
 
 function update(newData) {
   svg.selectAll("circle").transition().attr("r", 0).duration(1000).remove();
+  svg.selectAll("text").remove();
 
   var root = d3
     .hierarchy({ children: Object.values(newData) })
@@ -81,7 +88,7 @@ function update(newData) {
       // console.log(getKeyByValue(newData, d["data"]))
       return getKeyByValue(newData, d["data"]);
     })
-    .style("fill", "white")
+    .style("fill", "black")
     .style("font-family", "Helvetica Neue, Helvetica, Arial, san-serif")
     .style("font-size", "12px");
 }
