@@ -11,7 +11,7 @@ var svg = d3
   .attr("height", diameter)
   .attr("class", "bubble");
 
-d3.csv("shows_platform_split.csv").then(function (data) {
+d3.csv("shows_platform_split_single_genre.csv").then(function (data) {
   var PlatformsAndShows = new Proxy(
     {},
     {
@@ -24,12 +24,18 @@ d3.csv("shows_platform_split.csv").then(function (data) {
   console.log(PlatformsAndShows);
   // console.log(PlatformsAndShows["Netflix"]);
   // console.log(data[0]["Streaming Platform"]);
-  console.log(d3.keys(PlatformsAndShows));
+  console.log(Object.keys(PlatformsAndShows));
 
   update(PlatformsAndShows);
+
+  // setTimeout(function () {
+  //   update(PlatformsAndShows);
+  // }, 3000);
 });
 
 function update(newData) {
+  svg.selectAll("circle").transition().attr("r", 0).duration(1000).remove();
+
   var root = d3
     .hierarchy({ children: Object.values(newData) })
     .sum(function (d) {
@@ -37,7 +43,7 @@ function update(newData) {
     });
   bubble(root);
 
-  var bubbles = svg.selectAll(".bubble").data(root.children).enter();
+  var bubbles = svg.selectAll("bubble").data(root.children).enter();
 
   bubbles
     .append("circle")
@@ -53,7 +59,7 @@ function update(newData) {
     .attr("r", function (d) {
       return d.r;
     })
-    .duration(1000)
+    .duration(2000)
 
     .style("fill", function (d) {
       return color(d.value);
@@ -83,36 +89,3 @@ function update(newData) {
 function getKeyByValue(object, value) {
   return Object.keys(object).find((key) => object[key] === value);
 }
-
-// filtering
-const filterObj = { age: [0, 18], genre: "All", rating: [5, 10] };
-
-const filterData = (data, filterObj) => {
-  return data.filter((d) => {
-    if (filterObj.genre === "All") {
-      return (
-        d["IMDB Rating"] >= filterObj.rating[0] &&
-        d["IMDB Rating"] <= filterObj.rating[1] &&
-        d["Content Rating"] >= filterObj.age[0] &&
-        d["Content Rating"] <= filterObj.age[1]
-      );
-    }
-    return (
-      d["Genre"] === filterObj.genre &&
-      d["IMBD Rating"] >= filterObj.rating[0] &&
-      d["IMBD Rating"] <= filterObj.rating[1] &&
-      d["Content Rating"] >= filterObj.age[0] &&
-      d["Content Rating"] <= filterObj.age[1]
-    );
-  });
-};
-
-const init = async () => {
-  let data = await d3.csv("shows_platform_split.csv", d3.autoType);
-
-  let filteredData = filterData(data, filterObj); //filterObj tests a filtered situation
-  console.log(filteredData);
-  console.log(filteredData.length);
-};
-
-init();
